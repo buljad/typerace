@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Клавогонки IT // Speed Typing Arena</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <h1><span class="h1-icon">⌨️</span> Клавогонки IT</h1>
+      <div class="top-btn-group">
+        <button id="btn-sound"   class="icon-btn" title="Звук клика">🔊</button>
+        <button id="btn-open-lb" class="icon-btn" title="Лидерборд">🏆</button>
+        <button id="btn-help"    class="icon-btn" title="Правила">❓</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 1: РЕГИСТРАЦИЯ И ВХОД -->
+    <div id="screen-start" class="screen active">
+      <p class="subtitle">Введи свой никнейм и пароль, чтобы зафиксировать рекорд стенда!</p>
+
+      <div class="auth-card">
+        <input id="player-nick" class="input-field" type="text" maxlength="25"
+               placeholder="Твой никнейм…" autocomplete="off" spellcheck="false" />
+        <input id="player-pass" class="input-field" type="password" maxlength="20"
+               placeholder="Пароль (до 20 символов)" autocomplete="off" />
+        <div id="user-tip" class="user-status-tip">Введите никнейм и пароль для сохранения результата</div>
+      </div>
+
+      <button id="btn-start" class="btn primary large-btn">▶ Начать заезд</button>
+    </div>
+
+    <!-- ЭКРАН 2: ЗАЕЗД -->
+    <div id="screen-race" class="screen">
+      <div class="race-track-wrap">
+        <div class="race-track-lane">
+          <div id="race-car" class="race-car">🏎️</div>
+          <div class="race-finish">🏁</div>
+        </div>
+      </div>
+
+      <div class="live-stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">Знак/мин (CPM)</span>
+          <span id="live-cpm" class="stat-val accent">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Слов/мин (WPM)</span>
+          <span id="live-wpm" class="stat-val gold">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Точность</span>
+          <span id="live-acc" class="stat-val green">100%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Время</span>
+          <span id="live-time" class="stat-val">0.0с</span>
+        </div>
+      </div>
+
+      <div id="typing-box-container" class="typing-box-container focused">
+        <div id="text-display" class="text-display"></div>
+        <input id="hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      </div>
+
+      <div class="result-actions">
+        <button id="btn-change-quote" class="btn secondary">🎲 Поменять текст</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 3: РЕЗУЛЬТАТ -->
+    <div id="screen-result" class="screen">
+      <div class="badge" id="result-badge">🏁 Заезд завершён</div>
+      <p class="subtitle">Пилот: <span id="res-pilot-name" style="color:var(--gold); font-weight: 700;"></span></p>
+
+      <div id="result-rank-box" class="rank-result-card">
+        <div class="rank-label">Твое текущее положение в рейтинге:</div>
+        <div id="result-rank-title" class="rank-title">🏁 Расчет места…</div>
+      </div>
+
+      <div id="record-notification" class="record-alert"></div>
+
+      <div class="result-stats-card">
+        <div>
+          <span class="label">Скорость заезда:</span>
+          <span class="value" id="res-cpm">0 знаков/мин</span>
+        </div>
+        <div>
+          <span class="label">Слов в минуту (WPM):</span>
+          <span class="value" id="res-wpm">0 WPM</span>
+        </div>
+        <div>
+          <span class="label">Точность набора:</span>
+          <span class="value" id="res-acc">100%</span>
+        </div>
+        <div>
+          <span class="label">Затраченное время:</span>
+          <span class="value" id="res-time">0.0 сек</span>
+        </div>
+        <div>
+          <span class="label">Ошибок допущено:</span>
+          <span class="value" id="res-errors">0</span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="btn-again"   class="btn primary large-btn">🏎️ Еще попытка</button>
+        <button id="btn-show-lb" class="btn secondary">🏆 Таблица лидеров</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 4: ЛИДЕРБОРД -->
+    <div id="screen-leaderboard" class="screen">
+      <p class="subtitle">🏆 Официальный рейтинг стенда</p>
+      <div id="lb-table-wrap">
+        <table id="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Никнейм</th>
+              <th>Знак/мин</th>
+              <th>WPM</th>
+              <th>Точность</th>
+              <th>Дата</th>
+            </tr>
+          </thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+        <p id="lb-empty" class="lb-empty hidden">Пока нет участников — зафиксируй рекорд первым!</p>
+      </div>
+      <div class="result-actions">
+        <button id="btn-lb-back"  class="btn primary">← Назад</button>
+        <button id="btn-lb-clear" class="btn danger">🗑 Очистить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА: ПРАВИЛА -->
+  <div id="modal-help" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>❓ Правила Клавогонок</h2>
+      <div class="help-section">
+        <h3>🔒 Никнейм и пароль</h3>
+        <p>При первом входе задай никнейм и пароль (до 20 символов). Чтобы улучшить свой рекорд или защитить его от перезаписи другими гостями, вводи те же данные.</p>
+      </div>
+      <div class="help-section">
+        <h3>📜 Тексты заездов</h3>
+        <p>Каждая фраза подобрана на русском языке и оптимизирована под соревновательную дистанцию (150–165 знаков). До первого нажатия клавиши текст можно заменить кнопкой «Поменять текст».</p>
+      </div>
+      <div class="help-section">
+        <h3>🏆 Сохранение рекорда</h3>
+        <p>В лидерборде фиксируется только твой лучший результат (Personal Best). Худшая попытка не испортит занятое место.</p>
+      </div>
+      <button id="btn-help-close" class="btn primary large-btn">Понятно!</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
