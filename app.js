@@ -1,5 +1,6 @@
 /* ==========================================================
-   TYPING RACER ENGINE // SPEED TYPING ARENA (STRICT UNIQUE NICK)
+   TYPING RACER ENGINE // SPEED TYPING ARENA
+   Полная версия с умным счетчиком попыток (Smart Attempts)
    ========================================================== */
 
 const RUSSIAN_LONG_QUOTES = [
@@ -36,6 +37,7 @@ const state = {
   cachedDb: []
 };
 
+// DOM элементы
 const screens = {
   start:       document.getElementById('screen-start'),
   race:        document.getElementById('screen-race'),
@@ -64,6 +66,7 @@ const resWpm          = document.getElementById('res-wpm');
 const resAcc          = document.getElementById('res-acc');
 const resTime         = document.getElementById('res-time');
 const resErrors       = document.getElementById('res-errors');
+const recordAlert     = document.getElementById('record-notification');
 
 const btnChangeQuote  = document.getElementById('btn-change-quote');
 const btnAgain        = document.getElementById('btn-again');
@@ -79,6 +82,7 @@ const btnHelp         = document.getElementById('btn-help');
 const btnHelpClose    = document.getElementById('btn-help-close');
 const modalHelp       = document.getElementById('modal-help');
 
+// Аудиосинтезатор (Web Audio API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playKeyClick(isError = false) {
@@ -129,13 +133,14 @@ function showScreen(name) {
   screens[name].classList.add('active');
 }
 
+// ── База данных лидерборда ────────────────────────────────
 async function fetchLeaderboard() {
   try {
     const res = await fetch('/api/leaderboard');
     if (!res.ok) throw new Error('API offline');
     state.cachedDb = await res.json();
   } catch {
-    state.cachedDb = JSON.parse(localStorage.getItem('typing_leaderboard_v5') || '[]');
+    state.cachedDb = JSON.parse(localStorage.getItem('typing_leaderboard_v6') || '[]');
   }
   return state.cachedDb;
 }
@@ -149,30 +154,39 @@ async function commitLeaderboard(data) {
       body: JSON.stringify(data.slice(0, 200))
     });
   } catch (e) {
-    localStorage.setItem('typing_leaderboard_v5', JSON.stringify(data.slice(0, 200)));
+    localStorage.setItem('typing_leaderboard_v6', JSON.stringify(data.slice(0, 200)));
   }
 }
 
-// Проверка уникальности никнейма
+// Извлечение чистого имени (срезает случайные _2, #2, пробелы)
+function getBaseNick(rawNick) {
+  return rawNick
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_#\(\[\-]+(\d+)?[\)\]]?$/i, '')
+    .trim();
+}
+
+// Проверка статуса игрока на лету
 async function checkUserStatus() {
-  const nick = playerNickInput.value.trim();
-  if (!nick) {
+  const raw = playerNickInput.value.trim();
+  if (!raw) {
     userTip.className = 'user-status-tip';
     userTip.textContent = 'Укажи ник или @ник_в_тг для участия в турнире';
-    return false;
+    return;
   }
 
+  const baseNick = getBaseNick(raw);
   await fetchLeaderboard();
-  const existing = state.cachedDb.find(e => e.handle.toLowerCase() === nick.toLowerCase());
+  const existing = state.cachedDb.find(e => getBaseNick(e.handle) === baseNick);
 
   if (existing) {
-    userTip.className = 'user-status-tip error';
-    userTip.textContent = `Никнейм уже занят (${existing.cpm} CPM)! Для повтора укажи: ${nick}_2`;
-    return false;
+    const nextAttempt = (existing.attempts || 1) + 1;
+    userTip.className = 'user-status-tip existing-user';
+    userTip.textContent = `С возвращением! Рекорд: ${existing.cpm} CPM. Это будет заезд #${nextAttempt}`;
   } else {
     userTip.className = 'user-status-tip new-user';
-    userTip.textContent = 'Никнейм свободен! Готов к заезду.';
-    return true;
+    userTip.textContent = 'Новый участник! Попытка #1';
   }
 }
 
@@ -187,16 +201,11 @@ btnStart.addEventListener('click', async () => {
     return;
   }
 
-  const isAvailable = await checkUserStatus();
-  if (!isAvailable) {
-    playerNickInput.focus();
-    return;
-  }
-
   state.playerNick = nick;
   startRaceSession();
 });
 
+// Выбор случайной фразы без повтора подряд
 function getRandomQuote() {
   let newIdx;
   do {
@@ -307,6 +316,7 @@ window.addEventListener('keydown', (e) => {
 
 typingContainer.addEventListener('click', () => hiddenInput.focus());
 
+// Завершение заезда
 async function finishRace() {
   state.isRacing = false;
   clearInterval(state.timerHandle);
@@ -325,21 +335,46 @@ async function finishRace() {
   resTime.textContent = `${elapsed.toFixed(1)} сек`;
   resErrors.textContent = state.errorsCount;
 
-  // Вариант 3: Каждая запись создается как новая уникальная строка
+  // Умный учет попыток и Personal Best
   const list = await fetchLeaderboard();
-  const newEntry = {
-    handle: state.playerNick,
-    cpm: finalCpm,
-    wpm: finalWpm,
-    accuracy: accuracy,
-    date: new Date().toLocaleDateString('ru-RU')
-  };
+  const baseNick = getBaseNick(state.playerNick);
+  const userIndex = list.findIndex(e => getBaseNick(e.handle) === baseNick);
 
-  list.push(newEntry);
+  if (userIndex === -1) {
+    list.push({
+      handle: state.playerNick.trim(),
+      attempts: 1,
+      cpm: finalCpm,
+      wpm: finalWpm,
+      accuracy: accuracy,
+      date: new Date().toLocaleDateString('ru-RU')
+    });
+    recordAlert.className = 'record-alert new-record';
+    recordAlert.textContent = '🎉 Твой результат успешно зафиксирован в лидерборде!';
+  } else {
+    const user = list[userIndex];
+    user.attempts = (user.attempts || 1) + 1;
+    const prevBest = user.cpm;
+
+    if (finalCpm > prevBest) {
+      user.handle = state.playerNick.trim();
+      user.cpm = finalCpm;
+      user.wpm = finalWpm;
+      user.accuracy = accuracy;
+      user.date = new Date().toLocaleDateString('ru-RU');
+
+      recordAlert.className = 'record-alert new-record';
+      recordAlert.textContent = `🚀 Новый личный рекорд с ${user.attempts}-й попытки: ${finalCpm} CPM!`;
+    } else {
+      recordAlert.className = 'record-alert keep-record';
+      recordAlert.textContent = `Заезд #${user.attempts}: ${finalCpm} CPM. Личный рекорд (${prevBest} CPM) остался лучшим!`;
+    }
+  }
+
   list.sort((a, b) => b.cpm - a.cpm);
   await commitLeaderboard(list);
 
-  const finalRank = list.findIndex(e => e.handle === state.playerNick) + 1;
+  const finalRank = list.findIndex(e => getBaseNick(e.handle) === baseNick) + 1;
   const totalCount = list.length;
 
   resRankTitle.className = 'rank-title';
@@ -378,7 +413,10 @@ async function renderLeaderboard() {
   lbBody.innerHTML = rows.map((item, i) => `
     <tr class="${i < 3 ? 'rank-' + (i + 1) : ''}">
       <td>${rankSymbol(i)}</td>
-      <td><b>${esc(item.handle)}</b></td>
+      <td>
+        <b>${esc(item.handle)}</b>
+        ${item.attempts > 1 ? `<span style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:6px; margin-left:6px; color:var(--muted)">#${item.attempts}</span>` : ''}
+      </td>
       <td><span class="lb-score ${item.cpm >= 350 ? 'excellent' : 'good'}">${item.cpm}</span></td>
       <td>${item.wpm || Math.round(item.cpm / 5)}</td>
       <td>${item.accuracy}%</td>
@@ -410,7 +448,7 @@ btnLbBack.addEventListener('click', () => showScreen(state.prevScreen));
 btnLbClear.addEventListener('click', async () => {
   if (!confirm('Внимание! Это очистит все результаты участников. Продолжить?')) return;
   await commitLeaderboard([]);
-  localStorage.removeItem('typing_leaderboard_v5');
+  localStorage.removeItem('typing_leaderboard_v6');
   renderLeaderboard();
 });
 
