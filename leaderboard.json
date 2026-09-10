@@ -1,0 +1,17 @@
+[
+  {
+    "handle": "test_2",
+    "cpm": 239,
+    "wpm": 48,
+    "accuracy": 95,
+    "date": "10.09.2026"
+  },
+  {
+    "handle": "test",
+    "attempts": 2,
+    "cpm": 232,
+    "wpm": 46,
+    "accuracy": 97,
+    "date": "10.09.2026"
+  }
+]

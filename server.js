@@ -35,32 +35,35 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  const urlPath = req.url.split('?')[0];
+
   // GET /api/leaderboard
-  if (req.method === 'GET' && req.url === '/api/leaderboard') {
+  if (req.method === 'GET' && urlPath === '/api/leaderboard') {
     if (!fs.existsSync(LB_FILE)) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
       res.end('[]');
       return;
     }
     fs.readFile(LB_FILE, 'utf8', (err, data) => {
       if (err) { res.writeHead(500); res.end('Server error'); return; }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(data);
+      const cleanData = (!data || !data.trim()) ? '[]' : data;
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(cleanData);
     });
     return;
   }
 
   // POST /api/leaderboard
-  if (req.method === 'POST' && req.url === '/api/leaderboard') {
+  if (req.method === 'POST' && urlPath === '/api/leaderboard') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        const parsed = JSON.parse(body);
+        const parsed = JSON.parse(body || '[]');
         const pretty = JSON.stringify(parsed, null, 2);
         fs.writeFile(LB_FILE, pretty, 'utf8', (err) => {
           if (err) { res.writeHead(500); res.end('Write error'); return; }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           res.end('{"ok":true}');
         });
       } catch (e) {
@@ -70,8 +73,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Статика
-  const urlPath  = req.url.split('?')[0];
+  // Статические файлы
   const filePath = path.join(DIR, urlPath === '/' ? 'index.html' : urlPath);
 
   if (!filePath.startsWith(DIR)) { res.writeHead(403); res.end(); return; }
@@ -81,7 +83,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log('');
-  console.log('  ⌨️  Клавогонки IT запущены!');
+  console.log('  ⌨️  Клавогонки запущены!');
   console.log(`  👉  Открой в браузере: http://localhost:${PORT}`);
   console.log('');
   console.log('  Лидерборд сохраняется в leaderboard.json');

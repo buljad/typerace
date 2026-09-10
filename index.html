@@ -79,6 +79,9 @@
         <div id="result-rank-title" class="rank-title">🏁 Расчет места…</div>
       </div>
 
+      <!-- Контейнер уведомления о рекорде -->
+      <div id="record-notification" class="record-alert"></div>
+
       <div class="result-stats-card">
         <div>
           <span class="label">Скорость заезда:</span>
@@ -128,8 +131,7 @@
         <p id="lb-empty" class="lb-empty hidden">Пока нет участников — зафиксируй рекорд первым!</p>
       </div>
       <div class="result-actions">
-        <button id="btn-lb-back"  class="btn primary">← Назад</button>
-        <!-- <button id="btn-lb-clear" class="btn danger">🗑 Очистить</button> -->
+        <button id="btn-lb-back" class="btn primary">← Назад</button>
       </div>
     </div>
   </div>
@@ -143,8 +145,8 @@
         <p>Каждая фраза сбалансирована (~150–165 символов на русском языке). Таймер запускается с первым нажатием клавиши. Кнопка смены текста активна до начала набора.</p>
       </div>
       <div class="help-section">
-        <h3>🔒 Уникальность никнейма</h3>
-        <p>Каждая строка в таблице уникальна. Если никнейм уже занят, для повторной попытки добавь к нику цифру (например: <b>nick_2</b>).</p>
+        <h3>🏆 Личный рекорд и попытки</h3>
+        <p>Вводи свой ник каждый раз: система автоматически посчитает номер попытки и сохранит твой максимальный результат в таблице лидеров.</p>
       </div>
       <button id="btn-help-close" class="btn primary large-btn">Понятно!</button>
     </div>
