@@ -18,7 +18,7 @@
 
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 50% 20%, #16213e 0%, var(--bg) 75%);
+  background: url('images/bg.jpg') center/cover fixed no-repeat;
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -117,25 +117,24 @@ h1 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Форма авторизации */
 .auth-card {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   padding: 24px 30px;
-  max-width: 480px;
+  max-width: 540px;
   margin: 0 auto 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 .input-field {
   background: rgba(0,0,0,0.4);
   border: 2px solid rgba(255,255,255,0.18);
   border-radius: 14px;
   color: var(--text);
-  font-size: 1.3rem;
-  padding: 14px 20px;
+  font-size: 1.25rem;
+  padding: 15px 22px;
   width: 100%;
   text-align: center;
   outline: none;
@@ -149,12 +148,11 @@ h1 {
   font-size: 0.95rem;
   min-height: 24px;
   transition: color 0.2s;
+  color: var(--muted);
 }
-.user-status-tip.new-user { color: var(--gold); }
-.user-status-tip.existing-user { color: var(--success); }
-.user-status-tip.error { color: var(--accent); }
+.user-status-tip.new-user { color: var(--success); }
+.user-status-tip.error { color: var(--accent); font-weight: 600; }
 
-/* Трасса */
 .race-track-wrap {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -188,7 +186,6 @@ h1 {
   font-size: 1.8rem;
 }
 
-/* Показатели */
 .live-stats-bar {
   display: flex;
   justify-content: space-around;
@@ -219,7 +216,6 @@ h1 {
 .stat-val.gold   { color: var(--gold); }
 .stat-val.green  { color: var(--success); }
 
-/* Блок набора текста */
 .typing-box-container {
   position: relative;
   background: rgba(0, 0, 0, 0.45);
@@ -277,7 +273,6 @@ h1 {
   top: -9999px;
 }
 
-/* Карточка отображения места в зачете */
 .rank-result-card {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -302,27 +297,6 @@ h1 {
 .rank-title.rank-3 { color: var(--bronze); text-shadow: 0 0 15px rgba(205, 127, 50, 0.5); }
 .rank-title.rank-general { color: var(--success); text-shadow: 0 0 12px rgba(74, 222, 128, 0.4); }
 
-.record-alert {
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  display: none;
-}
-.record-alert.new-record {
-  display: block;
-  background: rgba(74, 222, 128, 0.2);
-  border: 1px solid var(--success);
-  color: var(--success);
-}
-.record-alert.keep-record {
-  display: block;
-  background: rgba(250, 204, 21, 0.2);
-  border: 1px solid var(--gold);
-  color: var(--gold);
-}
-
 .result-stats-card {
   background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -342,7 +316,6 @@ h1 {
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* Кнопки */
 .result-actions {
   display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
 }
@@ -385,8 +358,6 @@ h1 {
   background: #e74c3c;
   transform: translateY(-2px);
 }
-
-/* Заблокированное состояние кнопки */
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -396,7 +367,6 @@ h1 {
   filter: grayscale(0.6);
 }
 
-/* Лидерборд */
 #lb-table-wrap {
   max-height: 440px;
   overflow-y: auto;
@@ -435,7 +405,6 @@ h1 {
 .lb-score { font-weight: 800; font-size: 1.25rem; }
 .lb-empty { color: rgba(255,255,255,0.6); font-size: 1.2rem; padding: 46px 0; text-align: center; }
 
-/* Модалки */
 .modal-overlay {
   position: fixed;
   inset: 0;

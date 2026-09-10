@@ -10,7 +10,7 @@
 <body>
   <div class="container">
     <div class="top-bar">
-      <h1><span class="h1-icon">⌨️</span> Клавогонки IT</h1>
+      <h1><span class="h1-icon">⌨️</span> Клавогонки</h1>
       <div class="top-btn-group">
         <button id="btn-sound"   class="icon-btn" title="Звук клика">🔊</button>
         <button id="btn-open-lb" class="icon-btn" title="Лидерборд">🏆</button>
@@ -18,16 +18,14 @@
       </div>
     </div>
 
-    <!-- ЭКРАН 1: РЕГИСТРАЦИЯ И ВХОД -->
+    <!-- ЭКРАН 1: СТАРТ -->
     <div id="screen-start" class="screen active">
-      <p class="subtitle">Введи свой никнейм и пароль, чтобы зафиксировать рекорд стенда!</p>
+      <p class="subtitle">Проверь скорость слепой печати и зафиксируй результат на стенде!</p>
 
       <div class="auth-card">
-        <input id="player-nick" class="input-field" type="text" maxlength="25"
-               placeholder="Твой никнейм…" autocomplete="off" spellcheck="false" />
-        <input id="player-pass" class="input-field" type="password" maxlength="20"
-               placeholder="Пароль (до 20 символов)" autocomplete="off" />
-        <div id="user-tip" class="user-status-tip">Введите никнейм и пароль для сохранения результата</div>
+        <input id="player-nick" class="input-field" type="text" maxlength="30"
+               placeholder="Введи никнейм (к примеру, ник в тг)" autocomplete="off" spellcheck="false" />
+        <div id="user-tip" class="user-status-tip">Укажи ник или @ник_в_тг для участия в турнире</div>
       </div>
 
       <button id="btn-start" class="btn primary large-btn">▶ Начать заезд</button>
@@ -77,11 +75,9 @@
       <p class="subtitle">Пилот: <span id="res-pilot-name" style="color:var(--gold); font-weight: 700;"></span></p>
 
       <div id="result-rank-box" class="rank-result-card">
-        <div class="rank-label">Твое текущее положение в рейтинге:</div>
+        <div class="rank-label">Твое положение в общем зачете:</div>
         <div id="result-rank-title" class="rank-title">🏁 Расчет места…</div>
       </div>
-
-      <div id="record-notification" class="record-alert"></div>
 
       <div class="result-stats-card">
         <div>
@@ -107,7 +103,7 @@
       </div>
 
       <div class="result-actions">
-        <button id="btn-again"   class="btn primary large-btn">🏎️ Еще попытка</button>
+        <button id="btn-again"   class="btn primary large-btn">🏎️ Еще заезд</button>
         <button id="btn-show-lb" class="btn secondary">🏆 Таблица лидеров</button>
       </div>
     </div>
@@ -133,7 +129,7 @@
       </div>
       <div class="result-actions">
         <button id="btn-lb-back"  class="btn primary">← Назад</button>
-        <button id="btn-lb-clear" class="btn danger">🗑 Очистить</button>
+        <!-- <button id="btn-lb-clear" class="btn danger">🗑 Очистить</button> -->
       </div>
     </div>
   </div>
@@ -143,16 +139,12 @@
     <div class="modal">
       <h2>❓ Правила Клавогонок</h2>
       <div class="help-section">
-        <h3>🔒 Никнейм и пароль</h3>
-        <p>При первом входе задай никнейм и пароль (до 20 символов). Чтобы улучшить свой рекорд или защитить его от перезаписи другими гостями, вводи те же данные.</p>
+        <h3>⌨️ Набор текста</h3>
+        <p>Каждая фраза сбалансирована (~150–165 символов на русском языке). Таймер запускается с первым нажатием клавиши. Кнопка смены текста активна до начала набора.</p>
       </div>
       <div class="help-section">
-        <h3>📜 Тексты заездов</h3>
-        <p>Каждая фраза подобрана на русском языке и оптимизирована под соревновательную дистанцию (150–165 знаков). До первого нажатия клавиши текст можно заменить кнопкой «Поменять текст».</p>
-      </div>
-      <div class="help-section">
-        <h3>🏆 Сохранение рекорда</h3>
-        <p>В лидерборде фиксируется только твой лучший результат (Personal Best). Худшая попытка не испортит занятое место.</p>
+        <h3>🔒 Уникальность никнейма</h3>
+        <p>Каждая строка в таблице уникальна. Если никнейм уже занят, для повторной попытки добавь к нику цифру (например: <b>nick_2</b>).</p>
       </div>
       <button id="btn-help-close" class="btn primary large-btn">Понятно!</button>
     </div>
