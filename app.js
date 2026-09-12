@@ -235,7 +235,7 @@ async function checkUserStatus() {
   const raw = playerNickInput.value.trim();
   if (!raw) {
     userTip.className = 'user-status-tip';
-    userTip.textContent = 'Укажи ник или @ник_в_тг для участия в турнире';
+    userTip.textContent = 'Никнейм должен быть уникальным';
     return false;
   }
 
